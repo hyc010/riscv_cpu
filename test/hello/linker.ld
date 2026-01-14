@@ -1,0 +1,3 @@
+ENTRY(_start)
+
+MEMORY()
