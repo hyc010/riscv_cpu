@@ -45,6 +45,7 @@
 `define OPC_JALR      7'b1100111
 `define OPC_LUI       7'b0110111
 `define OPC_AUIPC     7'b0010111
+`define OPC_NOP       32'h00000013  // ADDI x0, x0, 0
 
 //ALU Operation Codes
 `define ALU_ADD       5'b00000        // Addition

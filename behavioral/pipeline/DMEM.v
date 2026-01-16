@@ -47,7 +47,7 @@ end
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         for (i = 0; i < `DMEM_SIZE; i = i + 1) begin
-            memory[i] = 8'b0;
+            memory[i] <= 8'b0;
         end
     end else begin
         // 写操作

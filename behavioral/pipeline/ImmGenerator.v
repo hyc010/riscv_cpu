@@ -1,4 +1,5 @@
 `include "Defines.vh"
+/* verilator lint_off UNUSEDSIGNAL */
 module ImmGenerator(
     input wire [`DATA_WIDTH-1:0] instr,
     input wire [2:0] imm_type,
@@ -11,7 +12,7 @@ assign imm_out = (imm_type == `IMM_I) ? {{20{instr[31]}}, instr[31:20]} :  // I-
                  (imm_type == `IMM_U) ? {instr[31:12], 12'b0} :  // U-type
                  (imm_type == `IMM_J) ? {{11{instr[31]}}, instr[31], instr[19:12], instr[20], instr[30:21], 1'b0} :  // J-type
                  32'b0;  // Default to zero
-
+/* verilator lint_on UNUSEDSIGNAL */
 
 
 

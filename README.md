@@ -1,2 +1,8 @@
-# RISCV cpu with single cycle and pipelined. 
-Supports RV32I instruction set.
+# 单周期及流水线RISCV CPU 
+支持 RV32I 指令集。
+# 流水线冲刷
+当分支（Branch）或跳转（Jump）在EX 阶段发生时，流水线会根据 EXU 计算出的目标地址获取新指令，从而替换掉之前路径上的错误指令。因此，需要对 IF/ID 和 ID/EX 级间寄存器中已寄存的信号进行冲刷（flush）。
+## 冲刷 IF/ID
+通过将 IF/ID 寄存器中的指令信号改为 NOP（空操作） 来实现冲刷。NOP 的含义是“什么都不做”，从而确保该流水线级不会产生任何副作用。NOP 指令在本设计中使用addi x0 x0 0来实现，其机器码为 32'h00000013
+## 冲刷 ID/EX
+将 EX 阶段的控制信号全部改为默认值（不会造成结果的值），不需要改变数据，即使有计算结果也不会影响寄存器或者数据储存器。

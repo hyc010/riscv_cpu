@@ -3,16 +3,16 @@ module Controller(
     input [6:0] opcode,
     input [2:0] funct3,
     input [6:0] funct7,
-    input branch_taken,
     output reg [2:0] id_mem_read,          //Memory Read Enable
     output reg [1:0] id_mem_write,         //Memory Write Enable
-    output reg [1:0] id_Wb_sel,            // 00: from ALU, 01: from Memory, 10: from PC+4
     output reg ALU_a_source,              // 0: from rs1, 1: from pc
     output reg ALU_b_source,              // 0: from rs2, 1: from immediate
     output reg [2:0] imm_type,            // R, I, S, B, U, J
     output reg [4:0] alu_code,            // ALU operation code
     output reg [5:0] branch_flag,    // Branch Equal, Branch Not Equal, Branch Less Than
     output reg id_wb_en,       // Register File Write Enable
+    output reg [1:0] id_Wb_sel,            // 00: from ALU, 01: from Memory, 10: from PC+4
+    output reg JAL_taken               //JAL or JALR taken
 );
 
 always @(*) begin
@@ -24,12 +24,8 @@ always @(*) begin
     ALU_b_source  = 0;
     branch_flag = 0;
     imm_type    = `IMM_R;
-    id_wb_en = 0;
-    PCsel = 1'b0;
-    if(branch_taken)
-        PCsel = 1'b1;
-    else
-        PCsel = PCsel; // retain previous value
+    id_wb_en = 1'b0;
+    JAL_taken = 1'b0;
     case (opcode)
         `OPC_OP: begin
             imm_type = `IMM_R;
@@ -132,14 +128,14 @@ always @(*) begin
             ALU_a_source = `alu_a_source_pc; // PC
             ALU_b_source = `alu_b_source_imm; // Immediate
             alu_code = `ALU_ADD; // For address calculation
-            PCsel = 1'b1; // Jump taken
+            JAL_taken = 1'b1; // Jump taken
         end
         `OPC_JALR: begin
             imm_type = `IMM_I;
             alu_code = `ALU_JALR_ADD; // JALR Addition
             id_wb_en = 1;
             id_Wb_sel = 2'b10; // From PC+4
-            PCsel = 1'b1; // Jump taken
+            JAL_taken = 1'b1; // Jump taken
             ALU_b_source = `alu_b_source_imm; // Immediate
         end
         default: begin

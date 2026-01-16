@@ -1,3 +1,4 @@
+`include "Defines.vh"
 module IF_ID(
     input wire clk,
     input wire rst_n,
@@ -5,9 +6,11 @@ module IF_ID(
     // from IF stage
     input wire [`ADDR_WIDTH-1:0] if_pc,
     input wire [`DATA_WIDTH-1:0] if_instr,
+    input wire [`ADDR_WIDTH-1:0] if_pc_plus4,
     // to ID stage
     output wire [`ADDR_WIDTH-1:0] id_pc,
-    output wire [`DATA_WIDTH-1:0] id_instr
+    output wire [`DATA_WIDTH-1:0] id_instr,
+    output wire [`ADDR_WIDTH-1:0] id_pc_plus4
 );
 
 DFF_EN #(
@@ -30,5 +33,16 @@ DFF_EN #(
     .en(en),
     .d(if_instr),
     .q(id_instr)
+);
+
+DFF_EN #(
+    .DFF_width(`ADDR_WIDTH),
+    .DFF_init(32'h0000_0000)
+) IF_ID_pc_plus4 (
+    .clk(clk),
+    .rst_n(rst_n),
+    .en(en),
+    .d(if_pc_plus4),
+    .q(id_pc_plus4)
 );
 endmodule
