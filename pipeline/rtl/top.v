@@ -54,11 +54,13 @@ wire [4:0] ex_control_alu_code;
 wire [5:0] ex_control_branch_flag;
 wire [`DATA_WIDTH-1:0] ex_data_rs1_data;
 wire [`DATA_WIDTH-1:0] ex_data_rs2_data;
+wire [`DATA_WIDTH-1:0] ex_rs1_data_fwd;
+wire [`DATA_WIDTH-1:0] ex_rs2_data_fwd;
 wire [`DATA_WIDTH-1:0] ex_data_alu_result;
 wire [`DATA_WIDTH-1:0] ex_pc_plus4;
 
 wire [`DATA_WIDTH-1:0] me_alu_result;
-wire [`DATA_WIDTH-1:0] me_data_rs2_data;
+// wire [`DATA_WIDTH-1:0] me_data_rs2_data;
 wire [2:0] me_control_mem_read;
 wire [1:0] me_control_mem_write;
 wire [1:0] me_control_Wb_sel;
@@ -66,6 +68,7 @@ wire me_control_wb_en;
 wire [`DATA_WIDTH-1:0] me_pc_plus4;
 wire [`DATA_WIDTH-1:0] me_rdata;
 wire [`REG_ADDR_WIDTH-1:0] me_data_rd_addr;
+wire [`DATA_WIDTH-1:0] me_rs2_data_fwd;
 
 wire [`DATA_WIDTH-1:0] wb_mem_rdata;
 wire [`DATA_WIDTH-1:0] wb_alu_result;
@@ -75,16 +78,21 @@ wire [1:0] wb_control_Wb_sel;
 wire [`REG_ADDR_WIDTH-1:0] wb_rd_addr;
 wire wb_control_wb_en;
 
+wire stall;
+
 assign if_instr_flush = (ex_redirect_taken) ? `OPC_NOP : if_instr;
 
-assign id_control_mem_read_flush = (ex_redirect_taken) ? 3'b000 : id_control_mem_read;
-assign id_control_mem_write_flush = (ex_redirect_taken) ? 2'b00 : id_control_mem_write;
-assign id_control_Wb_sel_flush = (ex_redirect_taken) ? 2'b00 : id_control_Wb_sel;
-assign id_control_wb_en_flush = (ex_redirect_taken) ? 1'b0 : id_control_wb_en;
+assign id_control_mem_read_flush = (ex_redirect_taken || stall) ? 3'b000 : id_control_mem_read;
+assign id_control_mem_write_flush = (ex_redirect_taken || stall) ? 2'b00 : id_control_mem_write;
+assign id_control_Wb_sel_flush = (ex_redirect_taken || stall) ? 2'b00 : id_control_Wb_sel;
+assign id_control_wb_en_flush = (ex_redirect_taken || stall) ? 1'b0 : id_control_wb_en;
+
+assign stall = (ex_control_mem_read != 3'b000) && (ex_data_rd_addr == id_data_rs1_addr || ex_data_rd_addr == id_data_rs2_addr) ? 1'b1 : 1'b0;
 
 IFU top_IFU (
     .clk(clk),
     .rst_n(rst_n),
+    .en(!stall),
     .redirect_taken(ex_redirect_taken),
     .redirect_addr(ex_data_alu_result),
     .if_pc(if_pc),
@@ -95,7 +103,7 @@ IFU top_IFU (
 IF_ID top_IF_ID (
     .clk(clk),
     .rst_n(rst_n),
-    .en(1'b1),
+    .en(!stall),
     .if_pc(if_pc),
     .if_instr(if_instr_flush),    //flush instruction to NOP on branch/jump
     .if_pc_plus4(if_pc_plus4),
@@ -158,8 +166,8 @@ ID_EX top_ID_EX (
 );
 
 EXU top_EXU(
-    .ex_data_rs1_data(ex_data_rs1_data),
-    .ex_data_rs2_data(ex_data_rs2_data),
+    .ex_data_rs1_data(ex_rs1_data_fwd),
+    .ex_data_rs2_data(ex_rs2_data_fwd),
     .ex_data_imm(ex_data_imm),
     .ex_data_pc(ex_data_pc),
     .ex_control_ALU_a_source(ex_control_ALU_a_source),
@@ -171,12 +179,27 @@ EXU top_EXU(
     .ex_redirect_taken(ex_redirect_taken)            //indicates a branch or jump
 );
 
+Fwd_unit top_Fwd_unit(
+    .me_data_rd_addr(me_data_rd_addr),
+    .wb_rd_addr(wb_rd_addr),
+    .ex_data_rs1_addr(ex_data_rs1_addr),
+    .ex_data_rs2_addr(ex_data_rs2_addr),
+    .ex_data_rs1_data(ex_data_rs1_data),
+    .ex_data_rs2_data(ex_data_rs2_data),
+    .me_control_wb_en,
+    .wb_control_wb_en,
+    .me_alu_result(me_alu_result),
+    .wb_data(wb_wdata),
+    .ex_rs1_data_fwd(ex_rs1_data_fwd),
+    .ex_rs2_data_fwd(ex_rs2_data_fwd)
+);
+
 EX_ME top_EX_ME (
     .clk(clk),
     .rst_n(rst_n),
     .en(1'b1),
     .ex_alu_result(ex_data_alu_result),
-    .ex_data_rs2_data(ex_data_rs2_data),
+    .ex_data_rs2_data(ex_rs2_data_fwd),
     .ex_control_mem_read(ex_control_mem_read),
     .ex_control_mem_write(ex_control_mem_write),
     .ex_control_Wb_sel(ex_control_Wb_sel),
@@ -184,7 +207,7 @@ EX_ME top_EX_ME (
     .ex_pc_plus4(ex_pc_plus4),
     .ex_data_rd_addr(ex_data_rd_addr),
     .me_alu_result(me_alu_result),
-    .me_data_rs2_data(me_data_rs2_data),
+    .me_data_rs2_data(me_rs2_data_fwd),
     .me_control_mem_read(me_control_mem_read),
     .me_control_mem_write(me_control_mem_write),
     .me_control_Wb_sel(me_control_Wb_sel),
@@ -197,7 +220,7 @@ MEU top_MEU (
     .clk(clk),
     .rst_n(rst_n),
     .me_addr(me_alu_result),
-    .me_wdata(me_data_rs2_data),
+    .me_wdata(me_rs2_data_fwd),
     .me_control_mem_read(me_control_mem_read),
     .me_control_mem_write(me_control_mem_write),
     .me_rdata(me_rdata)

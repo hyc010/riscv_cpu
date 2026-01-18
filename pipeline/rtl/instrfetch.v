@@ -2,6 +2,7 @@
 module instrfetch(
     input wire clk,
     input wire rst_n,
+    input wire en,
     input wire redirect_taken,
     input wire [`DATA_WIDTH-1:0] redirect_addr,
     output wire [`DATA_WIDTH-1:0] pc_plus4,
@@ -21,7 +22,7 @@ MUX2 #(.WIDTH(`DATA_WIDTH)) pc_mux (
 DFF_EN #(.DFF_width(`DATA_WIDTH), .DFF_init(32'h0000_0000)) pc_reg (
     .clk(clk),
     .rst_n(rst_n),
-    .en(1'b1),
+    .en(en),
     .d(next_pc),
     .q(pc)
 );

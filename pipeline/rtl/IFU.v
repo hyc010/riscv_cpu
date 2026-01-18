@@ -2,6 +2,7 @@
 module IFU(
     input wire clk,
     input wire rst_n,
+    input en,
     input wire redirect_taken,
     input wire [`ADDR_WIDTH-1:0] redirect_addr,
     output wire [`ADDR_WIDTH-1:0] if_pc,
@@ -12,6 +13,7 @@ module IFU(
 instrfetch IFU_instrfetch (
     .clk(clk),
     .rst_n(rst_n),
+    .en(en),
     .redirect_taken(redirect_taken),
     .redirect_addr(redirect_addr),
     .pc_plus4(if_pc_plus4),

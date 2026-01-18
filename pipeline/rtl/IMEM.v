@@ -22,46 +22,46 @@ assign instr = {memory[pc + 3], memory[pc + 2], memory[pc + 1], memory[pc]};
 
 initial begin
 //     // Example instructions (in little-endian format)
-    memory[0]   = 8'h13; // addi x1, x0, 0
-    memory[1]   = 8'h00;
-    memory[2]   = 8'h00;
-    memory[3]   = 8'h00;
+    // memory[0]   = 8'h13; // addi x0, x0, 0
+    // memory[1]   = 8'h00;
+    // memory[2]   = 8'h00;
+    // memory[3]   = 8'h00;
 
-    memory[4]   = 8'h93; // addi x1, x0, 5
-    memory[5]   = 8'h00;
-    memory[6]   = 8'h50;
-    memory[7]   = 8'h00;
+    // memory[4]   = 8'h93; // addi x1, x0, 5
+    // memory[5]   = 8'h00;
+    // memory[6]   = 8'h50;
+    // memory[7]   = 8'h00;
 
-    memory[8]   = 8'h13; // addi x2, x0, 10
-    memory[9]   = 8'h01;
-    memory[10]  = 8'hA0;
-    memory[11]  = 8'h00;
+    // memory[8]   = 8'h13; // addi x2, x0, 10
+    // memory[9]   = 8'h01;
+    // memory[10]  = 8'hA0;
+    // memory[11]  = 8'h00;
 
-    memory[12]  = 8'hB3; // add x3, x1, x2
-    memory[13]  = 8'h81;
-    memory[14]  = 8'h20;
-    memory[15]  = 8'h00;
+    // memory[12]  = 8'hB3; // add x3, x1, x2
+    // memory[13]  = 8'h81;
+    // memory[14]  = 8'h20;
+    // memory[15]  = 8'h00;
 
-    //addi, x4, x0, 15
-    memory[16]  = 8'h13;
-    memory[17]  = 8'h02;
-    memory[18]  = 8'hF0;
-    memory[19]  = 8'h00;
+    // //addi, x4, x0, 15
+    // memory[16]  = 8'h13;
+    // memory[17]  = 8'h02;
+    // memory[18]  = 8'hF0;
+    // memory[19]  = 8'h00;
 
-    memory[20]  = 8'h63; // beq x3, x4, 18
-    memory[21]  = 8'h04;
-    memory[22]  = 8'h00;
-    memory[23]  = 8'h00;
+    // memory[20]  = 8'h63; // beq x3, x4, 28
+    // memory[21]  = 8'h84;
+    // memory[22]  = 8'h41;
+    // memory[23]  = 8'h00;
 
-//     memory[24] = 8'h93; //addi x5, x0, 1 should be skipped
-//     memory[21] = 8'h02; 
-//     memory[22] = 8'h10; 
-//     memory[23] = 8'h00;
+    // memory[24] = 8'h93; //addi x5, x0, 1 should be skipped
+    // memory[25] = 8'h02; 
+    // memory[26] = 8'h10; 
+    // memory[27] = 8'h00;
 
-//     memory[24] = 8'h93; // addi x5, x0, 2
-//     memory[25] = 8'h02; 
-//     memory[26] = 8'h20; 
-//     memory[27] = 8'h00;
+    // memory[28] = 8'h93; // addi x5, x0, 2
+    // memory[29] = 8'h02; 
+    // memory[30] = 8'h20; 
+    // memory[31] = 8'h00;
 
 //     // 0x0C: addi x3, x0, -1   -> 0xFFF00193
 //     memory[28] = 8'h93; 
@@ -118,6 +118,36 @@ initial begin
 //   memory[28] = 8'h6F; memory[29] = 8'h00; memory[30] = 8'h00; memory[31] = 8'h00;
 
     // Add more instructions as needed
+
+// 0x00: addi x1, x0, 0        (0x00000093)
+memory[0]  = 8'h93;
+memory[1]  = 8'h00;
+memory[2]  = 8'h00;
+memory[3]  = 8'h00;
+
+// 0x04: addi x2, x0, 7        (0x00700113)
+memory[4]  = 8'h13;
+memory[5]  = 8'h01;
+memory[6]  = 8'h70;
+memory[7]  = 8'h00;
+
+// 0x08: sw x2, 0(x1)          (0x0020A023)
+memory[8]  = 8'h23;
+memory[9]  = 8'hA0;
+memory[10] = 8'h20;
+memory[11] = 8'h00;
+
+// 0x0C: lw x3, 0(x1)          (0x0000A183)
+memory[12] = 8'h83;
+memory[13] = 8'hA1;
+memory[14] = 8'h00;
+memory[15] = 8'h00;
+
+// 0x10: addi x4, x3, 1        (0x00118213)  // load-use hazard here
+memory[16] = 8'h13;
+memory[17] = 8'h82;
+memory[18] = 8'h11;
+memory[19] = 8'h00;
 end
 
 

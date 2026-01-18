@@ -48,8 +48,12 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         CData/*1:0*/ top__DOT__wb_control_Wb_sel;
         CData/*4:0*/ top__DOT__wb_rd_addr;
         CData/*0:0*/ top__DOT__wb_control_wb_en;
+        CData/*0:0*/ top__DOT__stall;
+        CData/*0:0*/ top__DOT____VdfgTmp_h5a7a53d1__0;
         CData/*2:0*/ top__DOT__top_IDU__DOT__imm_type;
         CData/*0:0*/ top__DOT__top_EXU__DOT__ex_branch_taken;
+        CData/*1:0*/ top__DOT__top_Fwd_unit__DOT__rs1_MUX_sel;
+        CData/*1:0*/ top__DOT__top_Fwd_unit__DOT__rs2_MUX_sel;
         CData/*0:0*/ __VstlFirstIteration;
         CData/*0:0*/ __Vtrigprevexpr___TOP__clk__0;
         CData/*0:0*/ __Vtrigprevexpr___TOP__rst_n__0;
@@ -61,27 +65,28 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ top__DOT__id_data_imm;
         IData/*31:0*/ top__DOT__ex_data_imm;
         IData/*31:0*/ top__DOT__ex_data_pc;
-        IData/*31:0*/ top__DOT__ex_data_rs1_data;
-        IData/*31:0*/ top__DOT__ex_data_rs2_data;
+        IData/*31:0*/ top__DOT__ex_rs1_data_fwd;
+        IData/*31:0*/ top__DOT__ex_rs2_data_fwd;
         IData/*31:0*/ top__DOT__ex_data_alu_result;
         IData/*31:0*/ top__DOT__ex_pc_plus4;
         IData/*31:0*/ top__DOT__me_alu_result;
-        IData/*31:0*/ top__DOT__me_data_rs2_data;
         IData/*31:0*/ top__DOT__me_pc_plus4;
         IData/*31:0*/ top__DOT__me_rdata;
+        IData/*31:0*/ top__DOT__me_rs2_data_fwd;
         IData/*31:0*/ top__DOT__wb_mem_rdata;
         IData/*31:0*/ top__DOT__wb_alu_result;
         IData/*31:0*/ top__DOT__wb_pc_plus4;
+        IData/*31:0*/ top__DOT__wb_wdata;
         IData/*31:0*/ top__DOT__top_IFU__DOT__IFU_instrfetch__DOT__next_pc;
         IData/*31:0*/ top__DOT__top_EXU__DOT__ex_operand_a;
         IData/*31:0*/ top__DOT__top_EXU__DOT__ex_operand_b;
+    };
+    struct {
         IData/*31:0*/ top__DOT__top_MEU__DOT__MEU_DMEM__DOT__i;
         IData/*31:0*/ top__DOT__top_Regfile__DOT__i;
         IData/*31:0*/ __VactIterCount;
         VlUnpacked<CData/*7:0*/, 1024> top__DOT__top_IFU__DOT__IFU_IMEM__DOT__memory;
         VlUnpacked<CData/*7:0*/, 32> top__DOT__top_MEU__DOT__MEU_DMEM__DOT__memory;
-    };
-    struct {
         VlUnpacked<IData/*31:0*/, 32> top__DOT__top_Regfile__DOT__registers;
         VlUnpacked<CData/*0:0*/, 2> __Vm_traceActivity;
     };

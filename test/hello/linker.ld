@@ -1,3 +1,0 @@
-ENTRY(_start)
-
-MEMORY()
